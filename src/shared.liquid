@@ -32,7 +32,7 @@
         box.querySelectorAll(".a2g-count").forEach(function (x) { x.remove(); }); // watch() rebuilds reuse the container
         A2G.locations.forEach(function (l, i) {
           var p = map.project([l.lng, l.lat]);
-          if (p.x < 0 || p.y < 0 || p.x > w || p.y > h) return;
+          if (p.x < 0 || p.y < 20 || p.x > w || p.y > h) return;
           var c = a2gCount(l.n);
           total += c;
           TRMNLMaps.dot(map, [l.lng, l.lat], { el: el, id: "loc" + i, radius: 4, hollow: c === 0 });
