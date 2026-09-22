@@ -6,7 +6,9 @@ static_data: ''
 polling_verb: get
 framework_version: 3.3.2
 serverless_language: ''
-polling_url: ''
+polling_url: |-
+  https://api.avant2go.com/api/locations?limit=1000
+  https://api.avant2go.com/api/cars
 polling_headers: ''
 polling_body: ''
 id: 485315
@@ -33,3 +35,32 @@ oauth_fixed_expiry_ms: ''
 name: Avant2Go
 description: ''
 refresh_interval: 15
+custom_fields:
+- keyname: lat
+  field_type: string
+  name: Latitude
+  description: Map center latitude
+  default: '46.0569'
+- keyname: lng
+  field_type: string
+  name: Longitude
+  description: Map center longitude
+  default: '14.5058'
+- keyname: zoom
+  field_type: number
+  name: Zoom
+  description: 12 (city) to 16 (streets)
+  min: 12
+  max: 16
+  default: 14
+- keyname: models
+  field_type: xhrSelect
+  name: Car models
+  description: Leave empty to count all models
+  optional: true
+  multiple: true
+  remote:
+    url: https://api.avant2go.com/api/carModels
+    method: GET
+    label_field: "{{ manufacturer }} {{ name }}"
+    value_field: _id
