@@ -1,0 +1,52 @@
+{% assign cf = trmnl.plugin_settings.custom_fields_values %}
+<script src="https://trmnl.com/js/maplibre-gl/5.24.0/maplibre-gl.js"></script>
+<link href="https://trmnl.com/js/maplibre-gl/5.24.0/maplibre-gl.css" rel="stylesheet">
+<script>
+  var A2G = {
+    locations: {{ locations | json }} || [],
+    models: {{ cf.models | json }},
+    center: [{{ cf.lng | default: 14.5058 | plus: 0 }}, {{ cf.lat | default: 46.0569 | plus: 0 }}],
+    zoom: Math.min(16, Math.max(12, {{ cf.zoom | default: 14 | plus: 0 }}))
+  };
+  // models may arrive as an array, a comma string, or null
+  A2G.selected = [].concat(A2G.models || []).join(",").split(",").filter(Boolean);
+
+  function a2gCount(n) {
+    var ids = A2G.selected.length ? A2G.selected : Object.keys(n);
+    return ids.reduce(function (s, id) { return s + (n[id] || 0); }, 0);
+  }
+
+  (function whenReady(cb) {
+    var tries = 0;
+    (function attempt() {
+      if (window.TRMNLMaps && window.maplibregl && document.getElementById("a2g-map")) return cb();
+      if (++tries > 200) return;
+      setTimeout(attempt, 50);
+    })();
+  })(function () {
+    var el = "a2g-map";
+    TRMNLMaps.watch(el, function () {
+      var map = new maplibregl.Map(TRMNLMaps.options({ el: el, preset: "streets", center: A2G.center, zoom: A2G.zoom }));
+      map.on("load", function () {
+        var box = map.getContainer(), w = box.clientWidth, h = box.clientHeight, total = 0;
+        box.querySelectorAll(".a2g-count").forEach(function (x) { x.remove(); }); // watch() rebuilds reuse the container
+        A2G.locations.forEach(function (l, i) {
+          var p = map.project([l.lng, l.lat]);
+          if (p.x < 0 || p.y < 0 || p.x > w || p.y > h) return;
+          var c = a2gCount(l.n);
+          total += c;
+          TRMNLMaps.dot(map, [l.lng, l.lat], { el: el, id: "loc" + i, radius: 4, hollow: c === 0 });
+          var tag = document.createElement("span");
+          tag.className = "a2g-count label label--small label--filled";
+          tag.textContent = c;
+          // ponytail: framework has no map text labels; inline position is the only way to pin one to a point
+          tag.style.cssText = "position:absolute;left:" + p.x + "px;top:" + p.y + "px;transform:translate(-50%,-140%)";
+          box.appendChild(tag);
+        });
+        var t = document.getElementById("a2g-total");
+        if (t) t.textContent = total + " available";
+      });
+      return map;
+    });
+  });
+</script>
