@@ -18,3 +18,6 @@ function transform(input) {
     })
   };
 }
+
+// ponytail: serverless runtime calls run(), default runtime calls transform(); same logic either way
+function run(input) { return transform(input); }

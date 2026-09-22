@@ -1,7 +1,7 @@
 // Run: node test/transform.test.js
 const assert = require("assert");
 const fs = require("fs");
-const transform = new Function(fs.readFileSync(__dirname + "/../src/transform.js", "utf8") + "\nreturn transform;")();
+const { transform, run } = new Function(fs.readFileSync(__dirname + "/../src/transform.js", "utf8") + "\nreturn { transform, run };")();
 
 const M1 = "56bdca9c91a36ac61cb11227";
 const M2 = "56bdca9c91a36ac61cb11228";
@@ -35,4 +35,5 @@ assert.deepStrictEqual(transform({ IDX_0: locations.results, IDX_1: cars }), exp
 assert.deepStrictEqual(transform({ IDX_0: { data: locations }, IDX_1: cars }), expected);  // doubly-wrapped locations
 assert.ok(transform({}).error);
 assert.ok(transform({ IDX_0: "oops", IDX_1: cars }).error);
+assert.deepStrictEqual(run({ IDX_0: locations, IDX_1: cars }), expected);                 // serverless entry point
 console.log("ok");

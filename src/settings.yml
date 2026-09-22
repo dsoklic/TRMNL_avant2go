@@ -5,7 +5,7 @@ dark_mode: 'no'
 static_data: ''
 polling_verb: get
 framework_version: 3.3.2
-serverless_language: ''
+serverless_language: node
 polling_url: |-
   https://api.avant2go.com/api/locations?limit=1000
   https://api.avant2go.com/api/cars
@@ -32,9 +32,6 @@ oauth_token_field_name: ''
 oauth_expiry_field_name: ''
 oauth_expiry_strategy: ''
 oauth_fixed_expiry_ms: ''
-name: Avant2Go
-description: ''
-refresh_interval: 15
 custom_fields:
 - keyname: lat
   field_type: string
@@ -59,8 +56,8 @@ custom_fields:
   description: Leave empty to count all models
   optional: true
   multiple: true
-  remote:
-    url: https://api.avant2go.com/api/carModels
-    method: GET
-    label_field: "{{ manufacturer }} {{ name }}"
-    value_field: _id
+  endpoint: https://trmnl-avant2go.vercel.app/api/car-models
+  exclude_csrf_token: true
+name: Avant2Go
+description: ''
+refresh_interval: 15
